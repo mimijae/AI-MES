@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center my-5">
+        <h2 class="mb-4" style="color: #333;">조직이 존재하지 않습니다</h2>
+        <p class="mb-4" style="color: #666;">조직을 먼저 추가한 후 접근해 주세요.</p>
+        <a href="{% url 'organization_add' %}" class="btn btn-primary shadow-sm">조직 추가하기</a>
+    </div>
+</div>
+{% endblock %}

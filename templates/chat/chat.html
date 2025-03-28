@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid h-100 p-0">
+    <div class="row g-0 h-100">
+        <!-- 왼쪽 사이드바 -->
+        <div id="sidebar" class="col-md-3 sidebar h-100 d-flex flex-column">
+            <div class="sidebar-header p-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">대화 기록</h6>
+            </div>
+            <ul class="chat-history-list flex-grow-1 overflow-auto" style="max-height: 100%; overflow-y: auto;">
+                {% for date, chats in grouped_chat_history.items %}
+                    <li class="chat-date-item p-2" data-date="{{ date }}" onclick="loadChat('{{ date }}')">
+                        <strong>{{ date }}</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- 채팅 메인 창 -->
+        <div id="main-content" class="col-md-9 chat-container d-flex flex-column h-100">
+            <div class="chat-header d-flex align-items-center justify-content-between p-3">
+                <!-- 햄버거 버튼 -->
+                <button id="toggle-sidebar" class="btn btn-light me-2" onclick="toggleSidebar()">
+                    ☰
+                </button>
+                <h6 class="m-0 text-center flex-grow-1" id="chat-date-title">스마트 팩토리 데이터 조회 챗봇</h6>
+            </div>
+            <div id="chat-box" class="chat-box flex-grow-1 overflow-auto p-4" style="overflow-y: auto; max-height: calc(100vh - 200px);"></div>
+            
+            <!-- 요청 보내는 칸 고정 -->
+            <form id="chat-form" class="chat-form">
+                <select id="model-select" class="form-select me-2" style="width: 150px;">
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="llama3.2:3b">llama3.2:3b</option>
+                    <option value="llama3.1:8b">llama3.1:8b</option>
+                    <option value="llama3.1:70b">llama3.1:70b</option>
+                    <option value="qwen2.5-coder:7b">qwen2.5-coder:7b</option>
+                    <option value="qwen2.5-coder:32b">qwen2.5-coder:32b</option>
+                </select>                
+                <input type="text" id="user-input" placeholder="메시지를 입력하세요" class="form-control me-2">
+                <button type="submit" class="btn btn-primary px-4">보내기</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 사이드바 열고 닫기
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("main-content");
+
+        sidebar.classList.toggle("d-none");
+
+        if (sidebar.classList.contains("d-none")) {
+            mainContent.classList.replace("col-md-9", "col-12");
+        } else {
+            mainContent.classList.replace("col-12", "col-md-9");
+        }
+    }
+
+    function loadChat(date) {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = "";  // 채팅 창 초기화
+        document.getElementById("chat-date-title").innerText = date + " 대화";
+
+        // date 파라미터를 'YYYY년 MM월 DD일' 형식으로 전송
+        fetch(`/chat/api/date/?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Error:", data.error);
+                    return;
+                }
+
+                data.chats.forEach(chat => {
+                    // 사용자 질문 (오른쪽 정렬)
+                    const userMessageElement = document.createElement("div");
+                    userMessageElement.classList.add("message-wrapper", "user", "d-flex", "justify-content-end", "mb-3");
+                    userMessageElement.innerHTML = `
+                        <div class="message-content user-message  px-3 py-2">${chat.prompt}</div>
+                        <div class="timestamp text-muted small mt-1">${chat.time}</div>
+                    `;
+                    chatBox.appendChild(userMessageElement);
+
+                    // 봇 응답 (왼쪽 정렬)
+                    const botMessageElement = document.createElement("div");
+                    botMessageElement.classList.add("message-wrapper", "assistant", "d-flex", "justify-content-start", "mb-3");
+                    botMessageElement.innerHTML = `
+                        <div class="message-content assistant-message  px-3 py-2">${chat.response}</div>
+                        <div class="timestamp text-muted small mt-1">${chat.time}</div>
+                    `;
+                    chatBox.appendChild(botMessageElement);
+
+                    // 표 추가
+                    if (chat.table) {
+                        const tableContainer = document.createElement("div");
+                        tableContainer.classList.add("mt-3", "px-3", "py-2");
+                        tableContainer.innerHTML = chat.table;
+                        chatBox.appendChild(tableContainer);
+                    }
+
+                    // 차트 추가
+                    if (chat.chart) {
+                        const chartContainer = document.createElement("div");
+                        chartContainer.classList.add("mt-3", "px-3", "py-2");
+                        chartContainer.innerHTML = `<img class="img-fluid mt-3" src="data:image/png;base64,${chat.chart}" alt="조회 결과 그래프" />`;
+                        chatBox.appendChild(chartContainer);
+                    }
+                });
+
+                chatBox.scrollTop = chatBox.scrollHeight;  // 스크롤을 맨 아래로 이동
+            })
+            .catch(error => console.error("Error fetching chat data:", error));
+    }
+
+    document.getElementById("chat-form").addEventListener("submit", async function (event) {
+        event.preventDefault();  // 폼 기본 제출 동작 방지
+
+        const userInput = document.getElementById("user-input").value;
+        const modelChoice = document.getElementById("model-select").value;
+        document.getElementById("user-input").value = "";
+
+        const chatBox = document.getElementById("chat-box");
+
+        // 사용자 메시지 추가 (오른쪽 정렬)
+        const userMessage = document.createElement("div");
+        userMessage.classList.add("message-wrapper", "user", "d-flex", "justify-content-end", "mb-3");
+        userMessage.innerHTML = `<div class="message-content user-message  px-3 py-2">${userInput}</div>`;
+        chatBox.appendChild(userMessage);
+
+        // 답변 생성 중 메시지 추가 (왼쪽 정렬)
+        const generatingMessage = document.createElement("div");
+        generatingMessage.classList.add("message-wrapper", "assistant", "d-flex", "justify-content-start", "mb-3");
+        generatingMessage.id = "generating-message";
+        generatingMessage.innerHTML = `
+            <div>
+                <div class="message-content assistant-message  px-3 py-2">답변 생성 중...</div>
+                <div class="timestamp text-muted small mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace("AM", "오전").replace("PM", "오후")}</div>
+            </div>
+        `;
+        chatBox.appendChild(generatingMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // 서버로 요청 전송
+        try {
+            const response = await fetch(`{% url 'chat_api' %}?model=${modelChoice}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ user_input: userInput })
+            });
+
+            if (!response.ok) {
+                throw new Error("응답 오류 발생");
+            }
+
+            const data = await response.json();
+            console.log("서버 응답 데이터:", data);
+
+            // 기존의 "답변 생성 중..." 메시지 제거
+            generatingMessage.remove();
+
+            // 응답 데이터 확인
+            if (data.response) {
+                // 새 봇 응답 메시지 추가
+                const botMessageElement = document.createElement("div");
+                botMessageElement.classList.add("message-wrapper", "assistant", "d-flex", "justify-content-start", "mb-3");
+                botMessageElement.innerHTML = `
+                    <div>
+                        <div class="message-content assistant-message px-3 py-2">${data.response}</div>
+                        <div class="timestamp text-muted small mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace("AM", "오전").replace("PM", "오후")}</div>
+                    </div>
+                `;
+                chatBox.appendChild(botMessageElement);
+            } else {
+                console.error("응답에 'response' 필드가 없습니다.");
+            }
+
+            // 표와 차트가 존재하는 경우 추가
+            if (data.table) {
+                const tableContainer = document.createElement("div");
+                tableContainer.classList.add("mt-3", "px-3", "py-2");
+                tableContainer.innerHTML = data.table;
+                chatBox.appendChild(tableContainer);
+            }
+            if (data.chart) {
+                const chartContainer = document.createElement("div");
+                chartContainer.classList.add("mt-3", "px-3", "py-2");
+                chartContainer.innerHTML = `<img class="img-fluid mt-3" src="data:image/png;base64,${data.chart}" alt="조회 결과 그래프" />`;
+                chatBox.appendChild(chartContainer);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (error) {
+            console.error("데이터를 가져오는 중 오류 발생:", error);
+            const generatingMessageElement = document.getElementById("generating-message");
+            generatingMessageElement.innerHTML = `
+                <div>
+                    <div class="message-content assistant-message px-3 py-2">오류가 발생했습니다. 다시 시도해 주세요.</div>
+                    <div class="timestamp text-muted small mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace("AM", "오전").replace("PM", "오후")}</div>
+                </div>
+            `;
+        }
+    });
+</script>
+{% endblock %}

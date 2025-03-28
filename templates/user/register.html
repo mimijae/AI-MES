@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="signup-form p-5 shadow-sm rounded" style="max-width: 400px; width: 100%; background-color: #ffffff; border: 1px solid #e0e0e0;">
+        <h2 class="text-center mb-4" style="color: #2f3e9e;">회원가입</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- 사용자 이름 -->
+            <div class="mb-3">
+                <label for="id_username" class="form-label">사용자 이름</label>
+                {{ form.username }}
+                {% if form.username.help_text %}
+                    <small class="form-text text-muted" style="font-size: 0.85rem; line-height: 1.4;">
+                        {{ form.username.help_text }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <!-- 아바타 -->
+            <div class="mb-3">
+                <label for="id_avatar" class="form-label">프로필</label>
+                {{ form.avatar }}
+            </div>
+
+            <!-- 성별 -->
+            <div class="mb-3">
+                <label for="id_gender" class="form-label">성별</label>
+                {{ form.gender }}
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="mb-3">
+                <label for="id_password1" class="form-label">비밀번호</label>
+                {{ form.password1 }}
+                {% if form.password1.help_text %}
+                    <small class="form-text text-muted" style="font-size: 0.85rem; line-height: 1.4;">
+                        {{ form.password1.help_text }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div class="mb-3">
+                <label for="id_password2" class="form-label">비밀번호 확인</label>
+                {{ form.password2 }}
+                {% if form.password2.help_text %}
+                    <small class="form-text text-muted" style="font-size: 0.85rem; line-height: 1.4; white-space: pre-line;">
+                        {{ form.password2.help_text }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <!-- 버튼 -->
+            <button type="submit" class="btn btn-primary w-100 mt-3" style="background-color: #2f3e9e; color: white; font-weight: 600; border-radius: 30px;">
+                회원가입
+            </button>
+        </form>
+
+        <!-- 로그인 링크 -->
+        <div class="text-center mt-3">
+            <a href="{% url 'users:login' %}" class="text-muted" style="font-size: 0.9rem; color: #2f3e9e;">
+                이미 계정이 있으신가요? 로그인
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

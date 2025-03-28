@@ -1,0 +1,128 @@
+{
+    "LogEntry": {
+        "id": "AutoField",
+        "action_time": "DateTimeField",
+        "user": "ForeignKey",
+        "content_type": "ForeignKey",
+        "object_id": "TextField",
+        "object_repr": "CharField",
+        "action_flag": "PositiveSmallIntegerField",
+        "change_message": "TextField"
+    },
+    "Permission": {
+        "group": "ManyToManyField",
+        "user": "ManyToManyField",
+        "id": "AutoField",
+        "name": "CharField",
+        "content_type": "ForeignKey",
+        "codename": "CharField"
+    },
+    "Group": {
+        "user": "ManyToManyField",
+        "id": "AutoField",
+        "name": "CharField",
+        "permissions": "ManyToManyField"
+    },
+    "ContentType": {
+        "logentry": "ForeignKey",
+        "permission": "ForeignKey",
+        "id": "AutoField",
+        "app_label": "CharField",
+        "model": "CharField"
+    },
+    "Session": {
+        "session_key": "CharField",
+        "session_data": "TextField",
+        "expire_date": "DateTimeField"
+    },
+    "User": {
+        "logentry": "ForeignKey",
+        "organizations_created": "ForeignKey",
+        "organization_memberships": "ForeignKey",
+        "accountings": "ForeignKey",
+        "items_created": "ForeignKey",
+        "chat": "ForeignKey",
+        "id": "BigAutoField",
+        "password": "CharField",
+        "last_login": "DateTimeField",
+        "is_superuser": "BooleanField",
+        "username": "CharField",
+        "first_name": "CharField",
+        "last_name": "CharField",
+        "email": "CharField",
+        "is_staff": "BooleanField",
+        "is_active": "BooleanField",
+        "date_joined": "DateTimeField",
+        "avatar": "CharField",
+        "gender": "CharField",
+        "groups": "ManyToManyField",
+        "user_permissions": "ManyToManyField"
+    },
+    "Organization": {
+        "members": "ForeignKey",
+        "accountings": "ForeignKey",
+        "items": "ForeignKey",
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "name": "CharField",
+        "description": "TextField",
+        "organization_type": "CharField",
+        "contact_email": "CharField",
+        "contact_phone": "CharField",
+        "address": "CharField",
+        "created_by": "ForeignKey"
+    },
+    "OrganizationMember": {
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "organization": "ForeignKey",
+        "user": "ForeignKey",
+        "role": "CharField"
+    },
+    "Accounting": {
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "organization": "ForeignKey",
+        "accounting_type": "CharField",
+        "amount": "DecimalField",
+        "payment_method": "CharField",
+        "accounting_date": "DateField",
+        "description": "TextField",
+        "handled_by": "ForeignKey"
+    },
+    "Category": {
+        "items": "ForeignKey",
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "name": "CharField",
+        "description": "TextField"
+    },
+    "Item": {
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "name": "CharField",
+        "category": "ForeignKey",
+        "quantity": "IntegerField",
+        "price_per_unit": "DecimalField",
+        "received_date": "DateField",
+        "expiration_date": "DateField",
+        "status": "CharField",
+        "organization": "ForeignKey",
+        "created_by": "ForeignKey"
+    },
+    "Chat": {
+        "id": "BigAutoField",
+        "created_at": "DateTimeField",
+        "updated_at": "DateTimeField",
+        "user": "ForeignKey",
+        "prompt": "TextField",
+        "response": "TextField",
+        "table": "TextField",
+        "chart": "TextField"
+    }
+}

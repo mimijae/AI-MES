@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>물품 삭제</h2>
+<p>아래 물품을 삭제하시겠습니까?</p>
+<ul>
+    <li><strong>물품명:</strong> {{ item.name }}</li>
+    <li><strong>카테고리:</strong> {{ item.category.name }}</li>
+    <li><strong>수량:</strong> {{ item.quantity }}</li>
+    <li><strong>단가:</strong> {{ item.price_per_unit }}</li>
+</ul>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">삭제</button>
+    <a href="{% url 'item_list' %}" class="btn btn-secondary">취소</a>
+</form>
+{% endblock %}

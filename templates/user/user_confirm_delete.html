@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>사용자 삭제 확인</h2>
+<p>정말로 이 사용자를 삭제하시겠습니까?</p>
+<ul>
+    <li><strong>사용자 이름:</strong> {{ user.username }}</li>
+    <li><strong>이메일:</strong> {{ user.email }}</li>
+</ul>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">삭제</button>
+    <a href="{% url 'users:user_detail' user.id %}" class="btn btn-secondary">취소</a>
+</form>
+{% endblock %}

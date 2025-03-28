@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+<h2>조직 수정</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">조직 이름</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ organization.name }}" required>
+    </div>
+    <div class="form-group mt-3">
+        <label for="description">조직 설명</label>
+        <textarea class="form-control" id="description" name="description">{{ organization.description }}</textarea>
+    </div>
+    <div class="form-group mt-3">
+        <label for="organization_type">조직 유형</label>
+        <select class="form-control" id="organization_type" name="organization_type">
+            <option value="club" {% if organization.organization_type == "club" %}selected{% endif %}>동아리</option>
+            <option value="lab" {% if organization.organization_type == "lab" %}selected{% endif %}>연구실</option>
+            <option value="student_council" {% if organization.organization_type == "student_council" %}selected{% endif %}>학생회</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">수정</button>
+</form>
+</div>
+{% endblock %}

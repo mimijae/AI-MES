@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+<h2>사용자 정보 수정</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary mt-3">수정</button>
+    <a href="{% url 'users:user_detail' user.id %}" class="btn btn-secondary mt-3">취소</a>
+</form>
+</div>
+{% endblock %}

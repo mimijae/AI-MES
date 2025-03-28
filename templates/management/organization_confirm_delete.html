@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>조직 삭제</h2>
+<p>아래 조직을 삭제하시겠습니까?</p>
+<ul>
+    <li><strong>조직 이름:</strong> {{ organization.name }}</li>
+    <li><strong>설명:</strong> {{ organization.description }}</li>
+    <li><strong>유형:</strong> {{ organization.get_organization_type_display }}</li>
+</ul>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">삭제</button>
+    <a href="{% url 'organization_list' %}" class="btn btn-secondary">취소</a>
+</form>
+{% endblock %}

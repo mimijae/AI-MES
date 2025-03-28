@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="login-form p-5 shadow-sm rounded" style="max-width: 400px; width: 100%; background-color: #ffffff; border: 1px solid #e0e0e0;">
+        <h2 class="text-center mb-4" style="color: #2f3e9e;">로그인</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username" class="form-label">사용자명</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요" required>
+            </div>
+            <div class="form-group mt-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-4" style="background-color: #2f3e9e; color: white; font-weight: 600; border-radius: 30px;">로그인</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="{% url 'users:register' %}" class="text-muted" style="font-size: 0.9rem; color: #2f3e9e;">회원가입</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

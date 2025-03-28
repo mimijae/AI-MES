@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron text-center py-5" style="background-color: #f8f9fa; color: #333;">
+    <div class="content p-5 mx-auto" style="max-width: 800px; border-radius: 10px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);">
+        <h1 class="display-4 fw-bold" style="color: #2f3e9e;">AI MES Smart Factory</h1>
+        <p class="lead mt-3" style="font-size: 1.2rem;">
+            조직 관리와 회계 기능을 지원하는 최첨단 AI 기반 스마트 팩토리 시스템
+        </p>
+        <hr class="my-4" style="border-color: #2f3e9e; opacity: 0.3;">
+        <p class="mb-4" style="font-size: 1rem; color: #666;">지금 로그인하고, AI가 지원하는 효율적인 관리 시스템을 경험해보세요!</p>
+        <a class="btn btn-lg me-3 px-5" href="{% url 'users:login' %}" role="button" style="background-color: #2f3e9e; color: white; font-weight: 600; border-radius: 30px;"><i class="fas fa-sign-in-alt"></i> 로그인</a>
+        <a class="btn btn-lg px-5" href="{% url 'users:register' %}" role="button" style="background-color: transparent; color: #2f3e9e; border: 2px solid #2f3e9e; font-weight: 600; border-radius: 30px;"><i class="fas fa-user-plus"></i> 회원가입</a>
+    </div>
+</div>
+
+<style>
+    .jumbotron {
+        background-color: #f8f9fa; /* 흰색 계열 배경 */
+        color: #333;
+    }
+    .content {
+        background-color: #ffffff; /* 카드 배경을 흰색으로 */
+        padding: 40px;
+        border-radius: 10px;
+    }
+    .btn-lg {
+        padding: 10px 20px;
+        border-radius: 30px;
+    }
+    .btn-lg:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}

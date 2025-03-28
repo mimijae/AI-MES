@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+<h2>조직 추가</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">조직 이름</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group mt-3">
+        <label for="description">조직 설명</label>
+        <textarea class="form-control" id="description" name="description"></textarea>
+    </div>
+    <div class="form-group mt-3">
+        <label for="organization_type">조직 유형</label>
+        <select class="form-control" id="organization_type" name="organization_type">
+            <option value="club">동아리</option>
+            <option value="lab">연구실</option>
+            <option value="student_council">학생회</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">저장</button>
+</form>
+</div>
+{% endblock %}

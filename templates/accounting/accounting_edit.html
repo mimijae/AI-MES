@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+<h2>회계 기록 수정</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group mt-3">
+        <label for="accounting_type">회계 유형</label>
+        <select class="form-control" id="accounting_type" name="accounting_type" required>
+            <option value="income" {% if accounting.accounting_type == "income" %}selected{% endif %}>수입</option>
+            <option value="expense" {% if accounting.accounting_type == "expense" %}selected{% endif %}>지출</option>
+        </select>
+    </div>
+    <div class="form-group mt-3">
+        <label for="amount">금액</label>
+        <input type="number" class="form-control" id="amount" name="amount" value="{{ accounting.amount }}" required>
+    </div>
+    <div class="form-group mt-3">
+        <label for="payment_method">결제 수단</label>
+        <select class="form-control" id="payment_method" name="payment_method" required>
+            <option value="cash" {% if accounting.payment_method == "cash" %}selected{% endif %}>현금</option>
+            <option value="card" {% if accounting.payment_method == "card" %}selected{% endif %}>카드</option>
+            <option value="transfer" {% if accounting.payment_method == "transfer" %}selected{% endif %}>계좌 이체</option>
+            <option value="other" {% if accounting.payment_method == "other" %}selected{% endif %}>기타</option>
+        </select>
+    </div>
+    <div class="form-group mt-3">
+        <label for="accounting_date">회계 날짜</label>
+        <input type="date" class="form-control" id="accounting_date" name="accounting_date" value="{{ accounting.accounting_date }}" required>
+    </div>
+    <div class="form-group mt-3">
+        <label for="description">설명</label>
+        <textarea class="form-control" id="description" name="description">{{ accounting.description }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">수정</button>
+</form>
+</div>
+{% endblock %}

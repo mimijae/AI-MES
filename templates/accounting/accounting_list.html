@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">회계 장부</h2>
+
+    <!-- 조직 선택 및 새 회계 기록 추가 -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- 조직 선택 -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <label for="organization-select" class="form-label mb-0">조직 선택:</label>
+                <select id="organization-select" class="form-select shadow-sm" onchange="updateFilters()">
+                    {% for organization in organizations %}
+                    <option value="{{ organization.id }}" {% if selected_organization and organization.id == selected_organization.id %}selected{% endif %}>
+                        {{ organization.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- 새 회계 기록 추가 버튼 -->
+        <a href="{% url 'accounting_add' %}" class="btn btn-primary shadow-sm">새 회계 기록 추가</a>
+    </div>
+
+    <!-- 표시 개수 -->
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <label for="items-per-page" class="form-label mb-0 me-2">표시 개수:</label>
+        <select id="items-per-page" class="form-select shadow-sm" onchange="updateFilters()" style="width: auto;">
+            {% for option in items_per_page_options %}
+            <option value="{{ option }}" {% if items_per_page == option %}selected{% endif %}>
+                {{ option }}개
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- 회계 목록 테이블 -->
+    <div class="table-responsive">
+        <style>
+            /* thead 텍스트 스타일 */
+            .table thead th {
+                font-weight: bold;  /* 텍스트를 굵게 */
+                font-size: 1.1rem; /* 폰트 크기를 약간 더 크게 */
+                color: #333;       /* 텍스트 색상 */
+            }
+        </style>
+        <table class="table table-borderless">
+            <thead style="background-color: #f4f4f7;">
+                <tr>
+                    <th class="py-3 px-4">회계 유형</th>
+                    <th class="py-3 px-4">금액</th>
+                    <th class="py-3 px-4">날짜</th>
+                    <th class="py-3 px-4">결제 수단</th>
+                    <th class="py-3 px-4">설명</th>
+                    <th class="py-3 px-4">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for accounting in accountings %}
+                <tr class="align-middle" style="border-bottom: 1px solid #e0e0e0;">
+                    <td class="py-3 px-4">
+                        {% if accounting.accounting_type == "income" %}
+                        <span class="text-success fw-bold">수입</span>
+                        {% elif accounting.accounting_type == "expense" %}
+                        <span class="text-danger fw-bold">지출</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-4"><strong>{{ accounting.amount }} 원</strong></td>
+                    <td class="py-3 px-4">{{ accounting.accounting_date }}</td>
+                    <td class="py-3 px-4">
+                        <span class="text-secondary">
+                            {% if accounting.payment_method == "cash" %}현금
+                            {% elif accounting.payment_method == "card" %}카드
+                            {% elif accounting.payment_method == "transfer" %}계좌 이체
+                            {% elif accounting.payment_method == "other" %}기타
+                            {% else %}알 수 없음
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">{{ accounting.description }}</td>
+                    <td class="py-3 px-4">
+                        <a href="{% url 'accounting_edit' accounting.id %}" class="btn btn-sm btn-outline-warning shadow-sm me-2">수정</a>
+                        <form action="{% url 'accounting_delete' accounting.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4" style="color: #666;">선택된 조직에 회계 기록이 없습니다. 새 기록을 추가하세요.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이지 네이션 -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination shadow-sm">
+                {% if accountings.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?organization_id={{ selected_organization.id }}&items_per_page={{ items_per_page }}&page={{ accountings.previous_page_number }}">이전</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">이전</span></li>
+                {% endif %}
+
+                {% for num in accountings.paginator.page_range %}
+                <li class="page-item {% if accountings.number == num %}active{% endif %}">
+                    <a class="page-link" href="?organization_id={{ selected_organization.id }}&items_per_page={{ items_per_page }}&page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if accountings.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?organization_id={{ selected_organization.id }}&items_per_page={{ items_per_page }}&page={{ accountings.next_page_number }}">다음</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">다음</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+    function updateFilters() {
+        const organizationId = document.getElementById('organization-select').value;
+        const itemsPerPage = document.getElementById('items-per-page').value;
+        window.location.href = `/accounting/?organization_id=${organizationId}&items_per_page=${itemsPerPage}`;
+    }
+</script>
+{% endblock %}
